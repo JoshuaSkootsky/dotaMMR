@@ -7,7 +7,7 @@ from datetime import datetime
 #####################  Default input here ####################################
 
 default_players = [
-    ('me', '215090022'),       # https://www.twitch.tv/klapdota
+    ('klapDota', '215090022'),       # https://www.twitch.tv/klapdota
     ('topson', '94054712'),
     ('miracle', '105248644'),
     ('rtz', '242629424'),
@@ -98,11 +98,24 @@ def getData(playerID):
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m.%Y'))
 #plt.gca().xaxis.set_major_locator(mdates.RRuleLocator(mdates.rrulewrapper(freq=mdates.MONTHLY, interval=8)))
 
+# Enhace handles
 handles = []
 for nick, playerID in ofInterest:
-    [dates, results] = list(zip(*getData(playerID)))
-    handle, = plt.plot(dates, results, label = nick)
-    plt.scatter(dates, results, s = plt.rcParams['lines.markersize'] ** 2 / 8)
+    # First, get the data and store it
+    player_games = getData(playerID)
+
+    # NEXT, CHECK IF THE DATA IS EMPTY!
+    if not player_games:
+        print(f"Warning: No public match data found for {nick}. Skipping.")
+        continue # Skip to the next player in the loop
+
+    # If we have data, we can safely unpack and plot it
+    [dates, results] = list(zip(*player_games))
+    handle, = plt.plot(dates, results, label=nick)
+    plt.scatter(
+        dates, results, s=plt.rcParams["lines.markersize"] ** 2 / 8
+    )
     handles.append(handle)
-plt.legend(handles = handles)
+
+plt.legend(handles=handles)
 plt.show()
